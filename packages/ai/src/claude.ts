@@ -26,7 +26,7 @@ export async function callClaude(
     throw new Error('Missing ANTHROPIC_API_KEY');
   }
 
-  const model = options.model || 'claude-3-5-sonnet-latest';
+  const model = options.model || 'claude-3-opus-20240229';
   const maxTokens = options.maxTokens || 4096;
 
   logger.info({ model, promptLength: prompt.length }, 'Calling Claude API via fetch');
@@ -71,10 +71,10 @@ export async function callClaude(
   const tokens_in = data.usage.input_tokens;
   const tokens_out = data.usage.output_tokens;
 
-  // Pricing for claude-3-5-sonnet-20241022
-  // Input: $3.00 per 1M tokens
-  // Output: $15.00 per 1M tokens
-  const usd_cost = (tokens_in / 1_000_000) * 3.0 + (tokens_out / 1_000_000) * 15.0;
+  // Pricing for claude-3-opus-20240229
+  // Input: $15.00 per 1M tokens
+  // Output: $75.00 per 1M tokens
+  const usd_cost = (tokens_in / 1_000_000) * 15.0 + (tokens_out / 1_000_000) * 75.0;
 
   logger.info(
     { tokens_in, tokens_out, usd_cost: usd_cost.toFixed(4) },
