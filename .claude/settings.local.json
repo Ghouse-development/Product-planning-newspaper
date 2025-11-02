@@ -18,7 +18,8 @@
       "Bash(corepack enable:*)",
       "Bash(corepack prepare:*)",
       "Bash(pnpm turbo run build:*)",
-      "Bash(pnpm list:*)"
+      "Bash(pnpm list:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

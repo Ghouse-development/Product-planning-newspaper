@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { getUnanalyzedExtracts, insertAIOutput, upsertTrendKPI } from '@ghouse/supakit'
-import { callClaude, getClassifyPrompt, getComparePrompt, getTrendPrompt, getStrategyPrompt } from '@ghouse/ai'
+import { callGemini, getClassifyPrompt, getComparePrompt, getTrendPrompt, getStrategyPrompt } from '@ghouse/ai'
 import { createLogger, safeJsonParse, formatDateJST } from '@ghouse/core'
 
 const logger = createLogger('api:analyze')
@@ -23,17 +23,15 @@ export async function POST() {
     for (const extract of unanalyzed) {
       try {
         // 1. Classify
-        const classifyPrompt = getClassifyPrompt(extract.text)
-        const classifyResponse = await callClaude(classifyPrompt, {
-          system: 'あなたは住宅業界の専門アナリストです。',
-        })
+        const classifyPrompt = `あなたは住宅業界の専門アナリストです。\n\n${getClassifyPrompt(extract.text)}`
+        const classifyResponse = await callGemini(classifyPrompt)
 
         const classification = safeJsonParse(classifyResponse.text, {}) as any
 
         await insertAIOutput({
           extract_id: extract.id,
           role: 'classify',
-          model: 'claude-3-5-sonnet-20241022',
+          model: 'gemini-1.5-pro',
           output_md: null,
           output_json: classification,
           tokens_in: classifyResponse.tokens_in,
@@ -44,12 +42,12 @@ export async function POST() {
         // 2. Compare (if applicable)
         if (classification.type === 'product' || classification.type === 'spec') {
           const comparePrompt = getComparePrompt(extract.text)
-          const compareResponse = await callClaude(comparePrompt)
+          const compareResponse = await callGemini(comparePrompt)
 
           await insertAIOutput({
             extract_id: extract.id,
             role: 'compare',
-            model: 'claude-3-5-sonnet-20241022',
+            model: 'gemini-1.5-pro',
             output_md: compareResponse.text,
             output_json: null,
             tokens_in: compareResponse.tokens_in,
@@ -79,12 +77,12 @@ export async function POST() {
 
     // 4. Generate trend analysis
     const trendPrompt = getTrendPrompt('Recent trend data')
-    const trendResponse = await callClaude(trendPrompt)
+    const trendResponse = await callGemini(trendPrompt)
 
     await insertAIOutput({
       extract_id: unanalyzed[0]?.id || '00000000-0000-0000-0000-000000000000',
       role: 'trend',
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'gemini-1.5-pro',
       output_md: null,
       output_json: safeJsonParse(trendResponse.text, {}),
       tokens_in: trendResponse.tokens_in,
@@ -94,12 +92,12 @@ export async function POST() {
 
     // 5. Generate strategy
     const strategyPrompt = getStrategyPrompt('Combined insights')
-    const strategyResponse = await callClaude(strategyPrompt)
+    const strategyResponse = await callGemini(strategyPrompt)
 
     await insertAIOutput({
       extract_id: unanalyzed[0]?.id || '00000000-0000-0000-0000-000000000000',
       role: 'strategy',
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'gemini-1.5-pro',
       output_md: null,
       output_json: safeJsonParse(strategyResponse.text, {}),
       tokens_in: strategyResponse.tokens_in,
