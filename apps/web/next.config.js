@@ -10,13 +10,6 @@ const nextConfig = {
     '@ghouse/report',
   ],
   output: 'standalone',
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      // Exclude problematic packages from webpack processing on server
-      config.externals = [...(config.externals || []), 'undici', 'cheerio']
-    }
-    return config
-  },
 }
 
 module.exports = nextConfig
