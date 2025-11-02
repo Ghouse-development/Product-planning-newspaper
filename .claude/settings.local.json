@@ -19,7 +19,9 @@
       "Bash(corepack prepare:*)",
       "Bash(pnpm turbo run build:*)",
       "Bash(pnpm list:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(python -m json.tool:*)",
+      "Bash(npm view:*)"
     ],
     "deny": [],
     "ask": []

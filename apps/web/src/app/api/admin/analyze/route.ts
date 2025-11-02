@@ -31,7 +31,7 @@ export async function POST() {
         await insertAIOutput({
           extract_id: extract.id,
           role: 'classify',
-          model: 'gemini-pro',
+          model: 'gemini-1.5-flash',
           output_md: null,
           output_json: classification,
           tokens_in: classifyResponse.tokens_in,
@@ -47,7 +47,7 @@ export async function POST() {
           await insertAIOutput({
             extract_id: extract.id,
             role: 'compare',
-            model: 'gemini-pro',
+            model: 'gemini-1.5-flash',
             output_md: compareResponse.text,
             output_json: null,
             tokens_in: compareResponse.tokens_in,
@@ -82,7 +82,7 @@ export async function POST() {
     await insertAIOutput({
       extract_id: unanalyzed[0]?.id || '00000000-0000-0000-0000-000000000000',
       role: 'trend',
-      model: 'gemini-pro',
+      model: 'gemini-1.5-flash',
       output_md: null,
       output_json: safeJsonParse(trendResponse.text, {}),
       tokens_in: trendResponse.tokens_in,
@@ -97,7 +97,7 @@ export async function POST() {
     await insertAIOutput({
       extract_id: unanalyzed[0]?.id || '00000000-0000-0000-0000-000000000000',
       role: 'strategy',
-      model: 'gemini-pro',
+      model: 'gemini-1.5-flash',
       output_md: null,
       output_json: safeJsonParse(strategyResponse.text, {}),
       tokens_in: strategyResponse.tokens_in,

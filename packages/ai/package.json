@@ -13,7 +13,7 @@
   "dependencies": {
     "@ghouse/core": "workspace:*",
     "@anthropic-ai/sdk": "^0.32.1",
-    "@google/generative-ai": "^0.21.0",
+    "@google/generative-ai": "^0.24.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {

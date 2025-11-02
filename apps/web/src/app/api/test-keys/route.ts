@@ -35,12 +35,10 @@ export async function GET() {
 
       // Test different model names
       const modelsToTry = [
-        'gemini-pro',
-        'gemini-1.5-pro',
         'gemini-1.5-flash',
-        'models/gemini-pro',
-        'models/gemini-1.5-pro',
-        'models/gemini-1.5-flash'
+        'gemini-1.5-pro',
+        'gemini-1.5-flash-latest',
+        'gemini-pro'
       ]
 
       for (const modelName of modelsToTry) {
