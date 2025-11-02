@@ -12,11 +12,12 @@
   },
   "dependencies": {
     "@ghouse/core": "workspace:*",
-    "cheerio": "^1.0.0-rc.12",
+    "cheerio": "0.22.0",
     "axios": "^1.6.7",
     "rss-parser": "^3.13.0"
   },
   "devDependencies": {
+    "@types/cheerio": "^0.22.31",
     "@types/node": "^20.11.5",
     "typescript": "^5.3.3"
   }
