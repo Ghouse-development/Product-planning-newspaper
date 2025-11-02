@@ -64,7 +64,7 @@ export async function POST() {
     await insertAIOutput({
       extract_id: classifications[0]?.extract_id || '00000000-0000-0000-0000-000000000000',
       role: 'newspaper',
-      model: 'gemini-1.5-pro',
+      model: 'gemini-pro',
       output_md: newspaperResponse.text,
       output_json: null,
       tokens_in: newspaperResponse.tokens_in,

@@ -28,7 +28,7 @@ export interface GeminiResponse {
 
 /**
  * Call Gemini API with prompt
- * Model: gemini-1.5-pro (supports vision)
+ * Model: gemini-pro (stable, widely available)
  */
 export async function callGemini(
   prompt: string,
@@ -38,7 +38,7 @@ export async function callGemini(
 ): Promise<GeminiResponse> {
   const client = getGeminiClient();
 
-  const modelName = options.model || 'gemini-1.5-pro';
+  const modelName = options.model || 'gemini-pro';
   const model = client.getGenerativeModel({ model: modelName });
 
   logger.info({ model: modelName, promptLength: prompt.length }, 'Calling Gemini API');
