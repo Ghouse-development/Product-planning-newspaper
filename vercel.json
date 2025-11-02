@@ -1,6 +1,7 @@
 {
-  "buildCommand": "cd apps/web && pnpm build",
+  "buildCommand": "turbo run build --filter=@ghouse/web",
   "installCommand": "corepack enable && corepack prepare pnpm@8.15.1 --activate && corepack pnpm install",
+  "framework": "nextjs",
   "regions": ["hnd1"],
   "crons": [
     {
