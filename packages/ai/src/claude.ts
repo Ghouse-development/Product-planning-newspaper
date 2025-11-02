@@ -26,7 +26,7 @@ export async function callClaude(
     throw new Error('Missing ANTHROPIC_API_KEY');
   }
 
-  const model = options.model || 'claude-3-5-sonnet-20240620';
+  const model = options.model || 'claude-3-5-sonnet-latest';
   const maxTokens = options.maxTokens || 4096;
 
   logger.info({ model, promptLength: prompt.length }, 'Calling Claude API via fetch');
