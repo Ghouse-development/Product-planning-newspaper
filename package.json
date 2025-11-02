@@ -1,0 +1,29 @@
+{
+  "name": "ghouse-trend-ai-insight",
+  "version": "1.0.0",
+  "private": true,
+  "description": "G-HOUSE トレンドAIインサイト - Automated industry intelligence newspaper",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "build:web": "turbo run build --filter=@ghouse/web",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "type-check": "turbo run type-check",
+    "vercel-build": "pnpm run build:web"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "turbo": "^1.12.2",
+    "typescript": "^5.3.3"
+  },
+  "packageManager": "pnpm@8.15.1",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

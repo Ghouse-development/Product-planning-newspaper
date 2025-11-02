@@ -1,0 +1,87 @@
+[
+  {
+    "name": "アイ工務店",
+    "domain": "www.ai-koumuten.co.jp",
+    "paths": ["/news", "/lineup", "/works"]
+  },
+  {
+    "name": "一条工務店",
+    "domain": "www.ichijo.co.jp",
+    "paths": ["/news", "/lineup", "/gallery"]
+  },
+  {
+    "name": "泉北ホーム",
+    "domain": "www.senboku-h.com",
+    "paths": ["/news", "/lineup", "/example"]
+  },
+  {
+    "name": "ヤマト住建",
+    "domain": "www.yamatojk.co.jp",
+    "paths": ["/news", "/lineup", "/case"]
+  },
+  {
+    "name": "クラシスホーム",
+    "domain": "www.clasishome.jp",
+    "paths": ["/news", "/product", "/works"]
+  },
+  {
+    "name": "ホームランディック",
+    "domain": "www.homelandic.com",
+    "paths": ["/news", "/house"]
+  },
+  {
+    "name": "トランスデザイン",
+    "domain": "www.trans-design.jp",
+    "paths": ["/news", "/works"]
+  },
+  {
+    "name": "アーキホームライフ",
+    "domain": "archi-homelife.jp",
+    "paths": ["/news", "/lineup", "/works"]
+  },
+  {
+    "name": "リブワーク",
+    "domain": "www.livwork.co.jp",
+    "paths": ["/news", "/ir", "/works"]
+  },
+  {
+    "name": "イシカワ",
+    "domain": "www.kk-ishikawa.com",
+    "paths": ["/news", "/product", "/case"]
+  },
+  {
+    "name": "国分ハウジング",
+    "domain": "www.kokubu-h.com",
+    "paths": ["/news", "/lineup", "/works"]
+  },
+  {
+    "name": "アイニコグループ",
+    "domain": "ainico.jp",
+    "paths": ["/news", "/works"]
+  },
+  {
+    "name": "ライフデザインカバヤ",
+    "domain": "www.lifedesign-kabaya.co.jp",
+    "paths": ["/news", "/products", "/works"]
+  },
+  {
+    "name": "ネイエ",
+    "domain": "neie.jp",
+    "paths": ["/news", "/works"]
+  },
+  {
+    "name": "ビーディホーム",
+    "domain": "bd-home.jp",
+    "paths": ["/news", "/works"]
+  },
+  {
+    "name": "ウィズダムグループ",
+    "domain": "wisdom-group.jp",
+    "paths": ["/news"]
+  },
+  {
+    "name": "アルピスピアホーム",
+    "domain": "www.alpspia-home.com",
+    "paths": ["/news", "/lineup", "/works"]
+  }
+]

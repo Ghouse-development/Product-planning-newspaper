@@ -1,0 +1,28 @@
+{
+  "buildCommand": "turbo run build --filter=@ghouse/web",
+  "installCommand": "corepack enable && corepack prepare pnpm@8.15.1 --activate && corepack pnpm install",
+  "outputDirectory": "apps/web/.next",
+  "regions": ["hnd1"],
+  "crons": [
+    {
+      "path": "/api/admin/crawl",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/admin/extract",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/admin/analyze",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/report/daily",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/report/weekly",
+      "schedule": "0 23 * * 0"
+    }
+  ]
+}

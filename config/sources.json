@@ -1,0 +1,29 @@
+{
+  "pr_times_queries": [
+    "注文住宅",
+    "工務店",
+    "規格住宅",
+    "ZEH",
+    "モデルハウス"
+  ],
+  "media_rss": [
+    {
+      "name": "新建ハウジング",
+      "url": "https://www.s-housing.jp/feed/"
+    }
+  ],
+  "instagram_rss": {
+    "tags": [
+      "注文住宅",
+      "吹抜け",
+      "ランドリールーム",
+      "塗り壁"
+    ],
+    "provider": "rss.app",
+    "urls": []
+  },
+  "x_queries": [
+    "注文住宅 OR 規格住宅"
+  ],
+  "youtube_channels": []
+}
