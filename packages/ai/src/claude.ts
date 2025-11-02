@@ -1,23 +1,6 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { createLogger } from '@ghouse/core';
 
 const logger = createLogger('ai:claude');
-
-let claudeClient: Anthropic | null = null;
-
-export function getClaudeClient(): Anthropic {
-  if (claudeClient) {
-    return claudeClient;
-  }
-
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error('Missing ANTHROPIC_API_KEY');
-  }
-
-  claudeClient = new Anthropic({ apiKey });
-  return claudeClient;
-}
 
 export interface ClaudeResponse {
   text: string;
@@ -27,7 +10,7 @@ export interface ClaudeResponse {
 }
 
 /**
- * Call Claude API with prompt
+ * Call Claude API with prompt using fetch (Vercel-compatible)
  * Model: claude-3-5-sonnet-20241022 (latest Sonnet 3.5)
  */
 export async function callClaude(
@@ -38,32 +21,55 @@ export async function callClaude(
     maxTokens?: number;
   } = {}
 ): Promise<ClaudeResponse> {
-  const client = getClaudeClient();
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    throw new Error('Missing ANTHROPIC_API_KEY');
+  }
 
   const model = options.model || 'claude-3-5-sonnet-20241022';
   const maxTokens = options.maxTokens || 4096;
 
-  logger.info({ model, promptLength: prompt.length }, 'Calling Claude API');
+  logger.info({ model, promptLength: prompt.length }, 'Calling Claude API via fetch');
 
-  const response = await client.messages.create({
+  const requestBody: any = {
     model,
     max_tokens: maxTokens,
-    system: options.system,
     messages: [
       {
         role: 'user',
         content: prompt,
       },
     ],
+  };
+
+  if (options.system) {
+    requestBody.system = options.system;
+  }
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify(requestBody),
   });
 
-  const text = response.content
-    .filter((block) => block.type === 'text')
-    .map((block) => (block as { type: 'text'; text: string }).text)
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Claude API error (${response.status}): ${errorText}`);
+  }
+
+  const data = await response.json() as any;
+
+  const text = data.content
+    .filter((block: any) => block.type === 'text')
+    .map((block: any) => block.text)
     .join('\n');
 
-  const tokens_in = response.usage.input_tokens;
-  const tokens_out = response.usage.output_tokens;
+  const tokens_in = data.usage.input_tokens;
+  const tokens_out = data.usage.output_tokens;
 
   // Pricing for claude-3-5-sonnet-20241022
   // Input: $3.00 per 1M tokens
