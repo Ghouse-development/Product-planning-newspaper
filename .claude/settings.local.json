@@ -27,7 +27,11 @@
       "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" diff apps/web/src/app/api/admin/analyze/route.ts)",
       "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" diff apps/web/src/app/api/report/daily/route.ts)",
       "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" diff packages/ai/src/gemini.ts)",
-      "Bash(pnpm dev)"
+      "Bash(pnpm dev)",
+      "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" status)",
+      "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" add -A)",
+      "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" commit -m \"feat: enhance newspaper visualization with prominent URLs and rich visual elements\n\n- Move URL to immediately after headline for better visibility\n- Add extensive CSS for visual hierarchy (article cards, info grids, badges)\n- Implement spec lists with checkmarks\n- Add tag clouds with colored badges\n- Create summary boxes with highlights\n- Add impact rating visual indicators\n- Improve overall readability with cards and shadows\")",
+      "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" push)"
     ],
     "deny": [],
     "ask": []

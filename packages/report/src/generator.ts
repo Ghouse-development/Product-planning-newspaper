@@ -289,6 +289,173 @@ export async function generateNewspaperHTML(markdown: string): Promise<string> {
       font-size: 1.1rem;
     }
 
+    /* Enhanced article card styling */
+    .article-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 20px 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-left: 6px solid #e63946;
+    }
+
+    .article-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .article-url-primary {
+      display: inline-block;
+      background: linear-gradient(135deg, #e63946 0%, #d62839 100%);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
+      transition: all 0.3s ease;
+      margin: 12px 0;
+    }
+
+    .article-url-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(230, 57, 70, 0.6);
+      background: linear-gradient(135deg, #d62839 0%, #c41e2a 100%);
+    }
+
+    .article-url-primary::before {
+      content: '🔗 ';
+      margin-right: 8px;
+      font-size: 1.2rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .info-card {
+      background: #f8f9fa;
+      border-left: 4px solid #457b9d;
+      padding: 12px;
+      border-radius: 6px;
+    }
+
+    .info-card-label {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .info-card-value {
+      font-size: 1rem;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .impact-rating {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 3px 8px rgba(255, 183, 3, 0.3);
+    }
+
+    .price-bar {
+      width: 100%;
+      height: 32px;
+      background: linear-gradient(90deg, #e8f4f8 0%, #457b9d 100%);
+      border-radius: 6px;
+      position: relative;
+      margin: 12px 0;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      color: white;
+      font-weight: bold;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .spec-list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0;
+    }
+
+    .spec-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      background: white;
+      border-radius: 6px;
+      margin: 8px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border-left: 3px solid #457b9d;
+    }
+
+    .spec-item::before {
+      content: '✓';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: #457b9d;
+      color: white;
+      border-radius: 50%;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .tag {
+      background: linear-gradient(135deg, #f1faee 0%, #a8dadc 100%);
+      color: #023047;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: 2px solid #457b9d;
+    }
+
+    .summary-box {
+      background: linear-gradient(135deg, #fff9e6 0%, #ffe8cc 100%);
+      border: 2px solid #ffb703;
+      border-radius: 10px;
+      padding: 16px;
+      margin: 16px 0;
+      box-shadow: 0 3px 8px rgba(255, 183, 3, 0.2);
+    }
+
+    .summary-box::before {
+      content: '📝 要約';
+      display: block;
+      font-weight: bold;
+      color: #fb8500;
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+    }
+
     hr {
       border: none;
       border-top: 2px solid #ddd;
