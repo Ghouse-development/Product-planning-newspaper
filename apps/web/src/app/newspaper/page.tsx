@@ -1,5 +1,6 @@
 import { getAIOutputsByRole } from '@ghouse/supakit'
 import { formatDateJST } from '@ghouse/core'
+import { generateNewspaperHTML } from '@ghouse/report'
 
 export const revalidate = 0
 
@@ -24,31 +25,8 @@ export default async function NewspaperPage() {
     )
   }
 
-  return (
-    <main className="min-h-screen p-8 bg-gray-50">
-      <div className="max-w-5xl mx-auto">
-        <div className="mb-6 flex justify-between items-center">
-          <a href="/" className="text-secondary hover:underline">
-            ← ホームに戻る
-          </a>
-          <a
-            href="/dashboard"
-            className="px-4 py-2 bg-secondary text-white rounded hover:bg-opacity-90"
-          >
-            📊 ダッシュボード
-          </a>
-        </div>
+  // Generate enhanced HTML with visual elements
+  const enhancedHTML = await generateNewspaperHTML(latestNewspaper.output_md)
 
-        <div className="bg-white rounded-lg shadow-lg p-8 md:p-12">
-          <div className="newspaper-content prose prose-lg max-w-none">
-            <div dangerouslySetInnerHTML={{ __html: latestNewspaper.output_md }} />
-          </div>
-        </div>
-
-        <div className="mt-6 text-center text-sm text-gray-500">
-          生成日時: {new Date(latestNewspaper.created_at).toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}
-        </div>
-      </div>
-    </main>
-  )
+  return <div dangerouslySetInnerHTML={{ __html: enhancedHTML }} />
 }
