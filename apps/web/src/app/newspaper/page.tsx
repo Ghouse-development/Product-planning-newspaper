@@ -4,10 +4,22 @@ import NewspaperView from './NewspaperView'
 
 export const revalidate = 0
 
+interface Article {
+  id: string
+  title: string
+  company: string
+  url: string
+  sourceType: string
+  tags?: string[]
+  specs?: string[]
+  price?: string
+  impact?: number
+}
+
 export default async function NewspaperPage() {
   const today = formatDateJST()
 
-  let articles = []
+  let articles: Article[] = []
 
   try {
     // Get recent AI outputs with source information (last 24 hours)
