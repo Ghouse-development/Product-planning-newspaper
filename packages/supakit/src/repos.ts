@@ -186,6 +186,61 @@ export async function getRecentAIOutputs(hoursAgo = 24) {
   return data as AIOutput[];
 }
 
+export interface AIOutputWithSource extends AIOutput {
+  extract?: Extract;
+  source_url?: string;
+  source_type?: string;
+}
+
+export async function getRecentAIOutputsWithSource(hoursAgo = 24) {
+  const supabase = getSupabaseClient();
+  const sinceDate = new Date(Date.now() - hoursAgo * 60 * 60 * 1000).toISOString();
+
+  const { data, error } = await supabase
+    .from('ai_outputs')
+    .select(`
+      *,
+      extracts!inner(
+        id,
+        raw_id,
+        text,
+        extractor,
+        created_at
+      )
+    `)
+    .gte('created_at', sinceDate)
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+
+  // Get source_raw data for each extract
+  const outputs = data as any[];
+  const enriched: AIOutputWithSource[] = await Promise.all(
+    outputs.map(async (output) => {
+      if (!output.extracts) return output;
+
+      const extract = Array.isArray(output.extracts) ? output.extracts[0] : output.extracts;
+
+      // Get source_raw
+      const { data: sourceData } = await supabase
+        .from('sources_raw')
+        .select('url, source_type')
+        .eq('id', extract.raw_id)
+        .single();
+
+      return {
+        ...output,
+        extracts: undefined, // Remove nested structure
+        extract: extract,
+        source_url: sourceData?.url,
+        source_type: sourceData?.source_type,
+      };
+    })
+  );
+
+  return enriched;
+}
+
 // ===== Trend KPI Repository =====
 export async function upsertTrendKPI(data: Omit<TrendKPI, 'id'>) {
   const supabase = getSupabaseClient();

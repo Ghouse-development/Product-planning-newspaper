@@ -26,7 +26,8 @@
       "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" diff --name-only)",
       "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" diff apps/web/src/app/api/admin/analyze/route.ts)",
       "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" diff apps/web/src/app/api/report/daily/route.ts)",
-      "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" diff packages/ai/src/gemini.ts)"
+      "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" diff packages/ai/src/gemini.ts)",
+      "Bash(pnpm dev)"
     ],
     "deny": [],
     "ask": []

@@ -201,6 +201,92 @@ export async function generateNewspaperHTML(markdown: string): Promise<string> {
 
     strong {
       color: #e63946;
+      font-weight: 700;
+    }
+
+    /* Enhanced badges and labels */
+    .company-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #e639466 20%, #d62839 100%);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      margin-right: 8px;
+      box-shadow: 0 2px 4px rgba(230, 57, 70, 0.3);
+    }
+
+    .source-badge {
+      display: inline-block;
+      background: #457b9d;
+      color: white;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-right: 6px;
+    }
+
+    .source-badge.sns {
+      background: #1DA1F2;
+    }
+
+    .source-badge.media {
+      background: #FF6B6B;
+    }
+
+    .info-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 12px 0;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #457b9d;
+    }
+
+    .info-value {
+      color: #333;
+    }
+
+    .article-url {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff9e6;
+      border: 2px solid #ffb703;
+      padding: 8px 14px;
+      border-radius: 6px;
+      color: #023047;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      margin: 8px 0;
+    }
+
+    .article-url:hover {
+      background: #ffb703;
+      color: white;
+      transform: translateX(4px);
+      box-shadow: 0 3px 8px rgba(255, 183, 3, 0.4);
+    }
+
+    .article-url::before {
+      content: '🔗';
+      font-size: 1.1rem;
     }
 
     hr {

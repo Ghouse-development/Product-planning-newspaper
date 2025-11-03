@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { insertAIOutput, getUsageMetrics, getRecentAIOutputs } from '@ghouse/supakit'
+import { insertAIOutput, getUsageMetrics, getRecentAIOutputsWithSource } from '@ghouse/supakit'
 import { callGemini, getNewspaperPrompt } from '@ghouse/ai'
 import { generateNewspaperHTML, generateChatSummary, sendDailyReport } from '@ghouse/report'
 import { createLogger, formatDateJST } from '@ghouse/core'
@@ -19,8 +19,8 @@ export async function POST() {
 
     const today = formatDateJST()
 
-    // Get recent AI outputs (last 24 hours)
-    const recentOutputs = await getRecentAIOutputs(24)
+    // Get recent AI outputs with source URL information (last 24 hours)
+    const recentOutputs = await getRecentAIOutputsWithSource(24)
 
     // Aggregate data
     const classifications = recentOutputs.filter((o) => o.role === 'classify')
@@ -28,14 +28,17 @@ export async function POST() {
     const trends = recentOutputs.filter((o) => o.role === 'trend')
     const strategies = recentOutputs.filter((o) => o.role === 'strategy')
 
-    // Build content sections
+    // Build content sections with URL and source information
     const topStories = classifications
-      .slice(0, 3)
+      .slice(0, 5)
       .map((c, i) => {
         const data = c.output_json as any
-        return `### ${i + 1}. ${data.company || '情報'}\n${data.product || ''}\n${data.specs?.join(', ') || ''}`
+        const sourceType = c.source_type || 'web'
+        const sourceLabel = sourceType === 'sns' ? 'SNS' : sourceType === 'media' ? 'メディア' : 'Web'
+
+        return `### ${i + 1}. 【${data.company || '不明'}】${data.product || data.type || '情報'}\n**発信元**: ${sourceLabel}\n**URL**: ${c.source_url || 'URL取得中'}\n**商品・サービス**: ${data.product || 'N/A'}\n**価格帯**: ${data.price_band || 'N/A'}\n**主な仕様**: ${data.specs?.join(', ') || 'N/A'}\n**関連タグ**: ${data.topic_tags?.join(', ') || 'N/A'}`
       })
-      .join('\n\n')
+      .join('\n\n---\n\n')
 
     const trendsText = trends[0]?.output_json
       ? JSON.stringify(trends[0].output_json, null, 2)
