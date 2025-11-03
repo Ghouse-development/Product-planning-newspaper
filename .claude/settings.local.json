@@ -21,7 +21,12 @@
       "Bash(pnpm list:*)",
       "Bash(cat:*)",
       "Bash(python -m json.tool:*)",
-      "Bash(npm view:*)"
+      "Bash(npm view:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" diff --name-only)",
+      "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" diff apps/web/src/app/api/admin/analyze/route.ts)",
+      "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" diff apps/web/src/app/api/report/daily/route.ts)",
+      "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" diff packages/ai/src/gemini.ts)"
     ],
     "deny": [],
     "ask": []

@@ -11,13 +11,103 @@ export interface NewspaperData {
 }
 
 /**
+ * Extract URLs from text and create visual link cards
+ */
+function extractURLs(text: string): Array<{ url: string; context: string }> {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const matches = text.matchAll(urlRegex);
+  const urls: Array<{ url: string; context: string }> = [];
+
+  for (const match of matches) {
+    const url = match[0];
+    const index = match.index || 0;
+    // Get surrounding context (50 chars before and after)
+    const start = Math.max(0, index - 50);
+    const end = Math.min(text.length, index + url.length + 50);
+    const context = text.substring(start, end).trim();
+    urls.push({ url, context });
+  }
+
+  return urls;
+}
+
+/**
+ * Generate SVG bar chart for trend data
+ */
+function generateTrendChart(data: Array<{ label: string; value: number }>): string {
+  if (data.length === 0) return '';
+
+  const maxValue = Math.max(...data.map((d) => d.value));
+  const barHeight = 40;
+  const barSpacing = 10;
+  const chartHeight = data.length * (barHeight + barSpacing);
+  const chartWidth = 600;
+  const labelWidth = 200;
+  const barWidth = chartWidth - labelWidth - 100;
+
+  const bars = data
+    .map((item, i) => {
+      const barLength = (item.value / maxValue) * barWidth;
+      const y = i * (barHeight + barSpacing);
+
+      return `
+        <g>
+          <text x="0" y="${y + 25}" fill="#333" font-size="14">${item.label}</text>
+          <rect x="${labelWidth}" y="${y}" width="${barLength}" height="${barHeight}" fill="#457b9d" rx="5" />
+          <text x="${labelWidth + barLength + 10}" y="${y + 25}" fill="#e63946" font-weight="bold" font-size="16">${item.value}</text>
+        </g>
+      `;
+    })
+    .join('\n');
+
+  return `
+    <svg width="${chartWidth}" height="${chartHeight + 20}" xmlns="http://www.w3.org/2000/svg">
+      ${bars}
+    </svg>
+  `;
+}
+
+/**
+ * Create visual summary boxes from markdown sections
+ */
+function createVisualSummary(html: string): string {
+  // Wrap h2 sections in visual cards
+  let enhanced = html.replace(
+    /<h2>(.*?)<\/h2>/g,
+    '<div class="section-card"><h2>$1</h2><div class="section-content">'
+  );
+
+  // Close the section cards before next h2 or at the end
+  const sections = enhanced.split('<div class="section-card">');
+  enhanced = sections
+    .map((section, i) => {
+      if (i === 0) return section; // Skip first part before any h2
+      // Close previous section before next h2 or at end
+      const nextH2Index = section.indexOf('<div class="section-card">');
+      if (nextH2Index > 0) {
+        return section.substring(0, nextH2Index) + '</div></div>' + section.substring(nextH2Index);
+      }
+      return section + '</div></div>';
+    })
+    .join('<div class="section-card">');
+
+  return enhanced;
+}
+
+/**
  * Generate newspaper HTML from markdown
  */
 export async function generateNewspaperHTML(markdown: string): Promise<string> {
   const metrics = await getUsageMetrics();
   const date = new Date().toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' });
 
-  const html = await marked.parse(markdown);
+  // Extract URLs for prominent display
+  const urls = extractURLs(markdown);
+
+  let html = await marked.parse(markdown);
+
+  // Enhance HTML with visual sections
+  html = createVisualSummary(html);
 
   // Create complete HTML with styling
   const fullHtml = `
@@ -164,6 +254,147 @@ export async function generateNewspaperHTML(markdown: string): Promise<string> {
       margin-bottom: 30px;
     }
 
+    .section-card {
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      border-left: 6px solid #e63946;
+      border-radius: 12px;
+      padding: 25px;
+      margin: 25px 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .section-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .section-card h2 {
+      margin-top: 0;
+      border-left: none;
+      padding-left: 0;
+      position: relative;
+    }
+
+    .section-card h2::before {
+      content: '📊';
+      margin-right: 10px;
+      font-size: 1.5rem;
+    }
+
+    .section-content {
+      margin-top: 15px;
+    }
+
+    .url-links {
+      background: #fff9e6;
+      border: 2px solid #ffb703;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 30px 0;
+    }
+
+    .url-links h3 {
+      color: #fb8500;
+      margin-top: 0;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .url-links h3::before {
+      content: '🔗';
+      margin-right: 10px;
+      font-size: 1.4rem;
+    }
+
+    .url-card {
+      background: white;
+      border-left: 4px solid #ffb703;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 12px 0;
+      transition: all 0.2s ease;
+    }
+
+    .url-card:hover {
+      border-left-width: 8px;
+      padding-left: 19px;
+      box-shadow: 0 3px 10px rgba(251, 133, 0, 0.2);
+    }
+
+    .url-card a {
+      color: #023047;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1rem;
+      display: block;
+      margin-bottom: 8px;
+      word-break: break-all;
+    }
+
+    .url-card a:hover {
+      color: #e63946;
+      text-decoration: underline;
+    }
+
+    .url-context {
+      color: #666;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-top: 5px;
+    }
+
+    .chart-container {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 25px 0;
+      overflow-x: auto;
+    }
+
+    .chart-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #457b9d;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .chart-title::before {
+      content: '📈';
+      margin-right: 10px;
+      font-size: 1.3rem;
+    }
+
+    a {
+      color: #457b9d;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: border-bottom 0.2s ease;
+    }
+
+    a:hover {
+      border-bottom: 2px solid #e63946;
+    }
+
+    code {
+      background: #f1f3f5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      color: #e63946;
+    }
+
+    blockquote {
+      border-left: 4px solid #ffb703;
+      background: #fff9e6;
+      padding: 15px 20px;
+      margin: 20px 0;
+      font-style: italic;
+    }
+
     @media print {
       body {
         background: white;
@@ -174,12 +405,51 @@ export async function generateNewspaperHTML(markdown: string): Promise<string> {
         box-shadow: none;
         padding: 20px;
       }
+
+      .section-card {
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     ${html}
+
+    ${
+      urls.length > 0
+        ? `
+    <div class="url-links">
+      <h3>関連リンク・参照URL</h3>
+      ${urls
+        .map(
+          (item) => `
+        <div class="url-card">
+          <a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.url}</a>
+          <div class="url-context">${item.context.replace(item.url, '').trim()}</div>
+        </div>
+      `
+        )
+        .join('')}
+    </div>
+    `
+        : ''
+    }
 
     <div class="metrics">
       <h3>🧾 APIコストダッシュボード</h3>
