@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { insertAIOutput, getUsageMetrics, getRecentAIOutputs } from '@ghouse/supakit'
-import { callClaude, getNewspaperPrompt } from '@ghouse/ai'
+import { callGemini, getNewspaperPrompt } from '@ghouse/ai'
 import { generateNewspaperHTML, generateChatSummary, sendDailyReport } from '@ghouse/report'
 import { createLogger, formatDateJST } from '@ghouse/core'
 
@@ -49,7 +49,7 @@ export async function POST() {
       ? JSON.stringify(strategies[0].output_json, null, 2)
       : '戦略データなし'
 
-    // Generate newspaper with Claude
+    // Generate newspaper with Gemini
     const newspaperPrompt = getNewspaperPrompt(
       topStories,
       trendsText,
@@ -58,16 +58,13 @@ export async function POST() {
       today
     )
 
-    const newspaperResponse = await callClaude(newspaperPrompt, {
-      system: 'あなたは業界新聞の編集長です。',
-      maxTokens: 4096,
-    })
+    const newspaperResponse = await callGemini(newspaperPrompt)
 
     // Save newspaper output
     await insertAIOutput({
       extract_id: classifications[0]?.extract_id || '00000000-0000-0000-0000-000000000000',
       role: 'newspaper',
-      model: 'claude-3-haiku-20240307',
+      model: 'gemini-2.5-flash',
       output_md: newspaperResponse.text,
       output_json: null,
       tokens_in: newspaperResponse.tokens_in,

@@ -28,7 +28,7 @@ export interface GeminiResponse {
 
 /**
  * Call Gemini API with prompt
- * Model: gemini-1.5-flash (latest, fast and cost-effective)
+ * Model: gemini-2.5-flash (latest, fast and cost-effective, 65K output tokens)
  */
 export async function callGemini(
   prompt: string,
@@ -38,7 +38,7 @@ export async function callGemini(
 ): Promise<GeminiResponse> {
   const client = getGeminiClient();
 
-  const modelName = options.model || 'gemini-1.5-flash';
+  const modelName = options.model || 'gemini-2.5-flash';
   const model = client.getGenerativeModel({ model: modelName });
 
   logger.info({ model: modelName, promptLength: prompt.length }, 'Calling Gemini API');
@@ -52,10 +52,10 @@ export async function callGemini(
   const tokens_in = Math.ceil(prompt.length / 4);
   const tokens_out = Math.ceil(text.length / 4);
 
-  // Pricing for gemini-1.5-pro (approximate)
-  // Input: $1.25 per 1M tokens
-  // Output: $5.00 per 1M tokens
-  const usd_cost = (tokens_in / 1_000_000) * 1.25 + (tokens_out / 1_000_000) * 5.0;
+  // Pricing for gemini-2.5-flash (approximate)
+  // Input: $0.075 per 1M tokens
+  // Output: $0.30 per 1M tokens
+  const usd_cost = (tokens_in / 1_000_000) * 0.075 + (tokens_out / 1_000_000) * 0.30;
 
   logger.info(
     { tokens_in, tokens_out, usd_cost: usd_cost.toFixed(4) },
