@@ -60,7 +60,7 @@ export async function POST() {
 
     const newspaperResponse = await callClaude(newspaperPrompt, {
       system: 'あなたは業界新聞の編集長です。',
-      maxTokens: 8000,
+      maxTokens: 4096,
     })
 
     // Save newspaper output
