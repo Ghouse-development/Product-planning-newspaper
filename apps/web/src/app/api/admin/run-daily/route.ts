@@ -45,37 +45,19 @@ export async function POST() {
     results.extract = await extractResponse.json()
     logger.info({ extract: results.extract }, 'Extract completed')
 
-    // 3. Analyze - AI分析 (分割実行でタイムアウト回避)
-    logger.info('Step 3/4: Running analyze in batches...')
+    // 3. Analyze - AI分析 (1バッチのみ実行でタイムアウト回避)
+    logger.info('Step 3/4: Running analyze (single batch)...')
     const batchSize = 10 // 10件ずつ処理
-    let totalAnalyzed = 0
-    let hasMore = true
-    let batchCount = 0
 
-    while (hasMore && batchCount < 5) { // 最大5バッチ（50件）まで
-      batchCount++
-      logger.info({ batchCount, batchSize }, `Running analyze batch ${batchCount}`)
-
-      const analyzeResponse = await fetch(
-        `${baseUrl}/api/admin/analyze?limit=${batchSize}&skip_aggregation=true`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        }
-      )
-
-      const batchResult = await analyzeResponse.json()
-      totalAnalyzed += batchResult.totalAnalyzed || 0
-      hasMore = batchResult.remaining || false
-
-      logger.info({ batchResult, totalAnalyzed }, `Batch ${batchCount} completed`)
-
-      if (!hasMore || batchResult.totalAnalyzed === 0) {
-        break
+    const analyzeResponse = await fetch(
+      `${baseUrl}/api/admin/analyze?limit=${batchSize}&skip_aggregation=true`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
       }
-    }
+    )
 
-    results.analyze = { totalAnalyzed, batches: batchCount }
+    results.analyze = await analyzeResponse.json()
     logger.info({ analyze: results.analyze }, 'Analyze completed')
 
     // 4. Report - 新聞生成・配信
