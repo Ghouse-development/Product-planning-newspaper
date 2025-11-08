@@ -86,7 +86,15 @@ export function truncate(text: string, maxLength: number): string {
  */
 export function safeJsonParse<T = unknown>(json: string, fallback: T): T {
   try {
-    return JSON.parse(json) as T;
+    // Strip markdown code fences if present (```json ... ``` or ``` ... ```)
+    let cleanJson = json.trim();
+    if (cleanJson.startsWith('```')) {
+      // Remove opening code fence (```json or ```)
+      cleanJson = cleanJson.replace(/^```(?:json)?\s*\n/, '');
+      // Remove closing code fence
+      cleanJson = cleanJson.replace(/\n```\s*$/, '');
+    }
+    return JSON.parse(cleanJson) as T;
   } catch {
     return fallback;
   }
