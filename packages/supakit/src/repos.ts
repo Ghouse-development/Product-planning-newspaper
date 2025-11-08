@@ -41,6 +41,22 @@ export async function insertSourceRaw(data: Omit<SourceRaw, 'id' | 'fetched_at'>
   return result as SourceRaw;
 }
 
+export async function getExistingUrls(sourceType?: string): Promise<Set<string>> {
+  const supabase = getSupabaseClient();
+
+  let query = supabase.from('sources_raw').select('url');
+
+  if (sourceType) {
+    query = query.eq('source_type', sourceType);
+  }
+
+  const { data, error } = await query;
+
+  if (error) throw error;
+
+  return new Set((data || []).map(r => r.url));
+}
+
 export async function getUnprocessedSourceRaws(limit = 100) {
   const supabase = getSupabaseClient();
 

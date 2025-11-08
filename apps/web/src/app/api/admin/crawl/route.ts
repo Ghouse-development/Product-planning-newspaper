@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
-import { insertSourceRaw } from '@ghouse/supakit'
+import { insertSourceRaw, getExistingUrls } from '@ghouse/supakit'
 import { generateHash, createLogger } from '@ghouse/core'
 import {
   fetchPRTimes,
+  fetchPRTimesArticle,
   fetchShinkenHousing,
   fetchCompanyPages,
   fetchInstagramRSS,
@@ -26,13 +27,35 @@ export async function POST() {
 
     let totalFetched = 0
     let totalSaved = 0
+    let totalSkipped = 0
+
+    // Get existing URLs to avoid re-crawling
+    logger.info('Fetching existing URLs from database')
+    const existingUrls = await getExistingUrls()
+    logger.info({ existingUrlsCount: existingUrls.size }, 'Existing URLs loaded')
 
     // 1. PR TIMES
     for (const query of sources.pr_times_queries) {
-      const articles = await fetchPRTimes(query, 5)
+      const articles = await fetchPRTimes(query, 10) // Increase limit to get more potential new articles
 
       for (const article of articles) {
-        const content = `${article.title}\n\n${article.content}`
+        // Skip if URL already exists
+        if (existingUrls.has(article.url)) {
+          logger.debug({ url: article.url }, 'URL already exists, skipping')
+          totalSkipped++
+          continue
+        }
+
+        // Fetch full article content for new URLs only
+        logger.info({ url: article.url }, 'Fetching new article content')
+        const fullContent = await fetchPRTimesArticle(article.url)
+
+        if (!fullContent) {
+          logger.warn({ url: article.url }, 'Failed to fetch article content, skipping')
+          continue
+        }
+
+        const content = `${article.title}\n\n${fullContent}`
         const hash = generateHash(content)
 
         const saved = await insertSourceRaw({
@@ -56,6 +79,13 @@ export async function POST() {
     const mediaArticles = await fetchShinkenHousing()
 
     for (const article of mediaArticles) {
+      // Skip if URL already exists
+      if (existingUrls.has(article.url)) {
+        logger.debug({ url: article.url }, 'URL already exists, skipping')
+        totalSkipped++
+        continue
+      }
+
       const content = `${article.title}\n\n${article.content}`
       const hash = generateHash(content)
 
@@ -80,6 +110,13 @@ export async function POST() {
       const pages = await fetchCompanyPages(company)
 
       for (const page of pages) {
+        // Skip if URL already exists
+        if (existingUrls.has(page.url)) {
+          logger.debug({ url: page.url }, 'URL already exists, skipping')
+          totalSkipped++
+          continue
+        }
+
         const hash = generateHash(page.content)
 
         const saved = await insertSourceRaw({
@@ -104,6 +141,13 @@ export async function POST() {
         const posts = await fetchInstagramRSS(feedUrl)
 
         for (const post of posts) {
+          // Skip if URL already exists
+          if (existingUrls.has(post.url)) {
+            logger.debug({ url: post.url }, 'URL already exists, skipping')
+            totalSkipped++
+            continue
+          }
+
           const hash = generateHash(post.content)
 
           const saved = await insertSourceRaw({
@@ -125,15 +169,16 @@ export async function POST() {
       }
     }
 
-    logger.info({ totalFetched, totalSaved }, 'Crawl job completed')
+    logger.info({ totalFetched, totalSaved, totalSkipped }, 'Crawl job completed')
 
     // Send success notification
     await notifySuccess({
       job: 'データ収集 (Crawl)',
-      summary: `✅ データ収集が完了しました`,
+      summary: `✅ データ収集が完了しました（新情報のみ取得）`,
       metrics: {
-        '取得件数': totalFetched,
-        '保存件数': totalSaved,
+        '新規取得': totalFetched,
+        '保存成功': totalSaved,
+        'スキップ（既存）': totalSkipped,
         '重複': totalFetched - totalSaved,
       },
     })
@@ -142,6 +187,7 @@ export async function POST() {
       success: true,
       totalFetched,
       totalSaved,
+      totalSkipped,
       duplicates: totalFetched - totalSaved,
     })
   } catch (error) {
