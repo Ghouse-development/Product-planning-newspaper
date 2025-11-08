@@ -14,6 +14,38 @@ interface Article {
   specs?: string[]
   price?: string
   impact?: number
+  summary?: string
+}
+
+// Generate summary from classification data
+function generateSummary(data: any): string {
+  const parts: string[] = []
+
+  if (data.type) {
+    const typeMap: Record<string, string> = {
+      product: '新商品',
+      spec: '仕様情報',
+      price: '価格情報',
+      regulation: '規制・法令',
+      case_study: '事例',
+      recruitment: '採用情報',
+    }
+    parts.push(typeMap[data.type] || data.type)
+  }
+
+  if (data.topic_tags && Array.isArray(data.topic_tags) && data.topic_tags.length > 0) {
+    parts.push(`関連: ${data.topic_tags.slice(0, 3).join('、')}`)
+  }
+
+  if (data.price_band) {
+    parts.push(`価格帯: ${data.price_band}`)
+  }
+
+  if (data.specs && Array.isArray(data.specs) && data.specs.length > 0) {
+    parts.push(`主な特徴: ${data.specs.slice(0, 2).join('、')}`)
+  }
+
+  return parts.length > 0 ? parts.join(' | ') : '詳細情報をご確認ください'
 }
 
 export default async function NewspaperPage() {
@@ -42,6 +74,7 @@ export default async function NewspaperPage() {
           specs: data.specs || [],
           price: data.price_band || undefined,
           impact: Math.min(5, Math.max(1, Math.floor(Math.random() * 3) + 3)),
+          summary: generateSummary(data),
         }
       })
     }
@@ -59,6 +92,7 @@ export default async function NewspaperPage() {
         specs: ['AI音声制御', 'エネルギー最適化', 'セキュリティ連携'],
         price: '3000-4000万円',
         impact: 5,
+        summary: '新商品 | 関連: IoT、スマートホーム、エコ | 価格帯: 3000-4000万円 | 主な特徴: AI音声制御、エネルギー最適化',
       },
       {
         id: '2',
@@ -70,6 +104,7 @@ export default async function NewspaperPage() {
         specs: ['太陽光発電', '蓄電池', '高断熱'],
         price: '2500-3500万円',
         impact: 4,
+        summary: '新商品 | 関連: ZEH、省エネ、補助金 | 価格帯: 2500-3500万円 | 主な特徴: 太陽光発電、蓄電池',
       },
       {
         id: '3',
@@ -81,6 +116,7 @@ export default async function NewspaperPage() {
         specs: ['防音書斎', '高速Wi-Fi', '可変間取り'],
         price: '2800-3800万円',
         impact: 4,
+        summary: '新商品 | 関連: 在宅勤務、ワークスペース、間取り | 価格帯: 2800-3800万円 | 主な特徴: 防音書斎、高速Wi-Fi',
       },
     ]
   }

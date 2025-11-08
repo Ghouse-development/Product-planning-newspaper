@@ -12,6 +12,7 @@ interface Article {
   specs?: string[]
   price?: string
   impact?: number
+  summary?: string
 }
 
 interface NewspaperViewProps {
@@ -61,6 +62,7 @@ export default function NewspaperView({ articles, date }: NewspaperViewProps) {
                 specs={article.specs}
                 price={article.price}
                 impact={article.impact}
+                summary={article.summary}
               />
             ))}
           </div>

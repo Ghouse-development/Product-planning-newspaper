@@ -56,6 +56,9 @@ export function ArticleCard({
               {'★'.repeat(impact)}
             </div>
           </div>
+          {summary && (
+            <p className="card-summary">{summary}</p>
+          )}
           <a
             href={url}
             target="_blank"
@@ -173,6 +176,17 @@ export function ArticleCard({
           margin: 0;
           flex: 1;
           min-width: 200px;
+        }
+
+        .card-summary {
+          color: #4a5568;
+          font-size: 14px;
+          line-height: 1.6;
+          margin: 0 0 12px 0;
+          padding: 12px;
+          background: #f7fafc;
+          border-left: 4px solid #667eea;
+          border-radius: 4px;
         }
 
         .impact-badge {
