@@ -20,7 +20,12 @@ export async function extractWithRules(html: string): Promise<ExtractedContent> 
   $('script, style, nav, footer, header, .advertisement').remove();
 
   // Extract text
-  const text = $('body').text().trim().replace(/\s+/g, ' ');
+  let text = $('body').text().trim().replace(/\s+/g, ' ');
+
+  // If no body tag found (plain text input), use the content as-is
+  if (!text || text.length === 0) {
+    text = html.trim().replace(/\s+/g, ' ');
+  }
 
   // Extract tables
   const tables: string[] = [];

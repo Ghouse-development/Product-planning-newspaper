@@ -36,7 +36,11 @@
       "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" commit -m \"fix: add TypeScript type definition for articles array\")",
       "Bash(nul)",
       "Bash(where:*)",
-      "Bash(node test-db.js:*)"
+      "Bash(node test-db.js:*)",
+      "Bash(timeout /t 60)",
+      "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" commit -m \"fix: resolve 【不明】情報 issue by fixing text extraction\n\n- Update extractor.ts to handle plain text input (non-HTML content)\n- When cheerio fails to extract text from body, use raw content as fallback\n- This fixes empty extracts that caused Gemini to return empty classification\n- Tested full pipeline: crawl → extract → analyze → newspaper display\n- Articles now show proper company names and product titles\")",
+      "Bash(if exist \"C:\\claudecode\\Product planning newspaper\\nul\" del \"C:\\claudecode\\Product planning newspaper\\nul\")",
+      "Bash(git -C \"C:\\claudecode\\Product planning newspaper\" commit -m \"fix: resolve \\u3010\\u4e0d\\u660e\\u3011\\u60c5\\u5831 issue by fixing text extraction\n\n- Update extractor.ts to handle plain text input (non-HTML content)\n- When cheerio fails to extract text from body, use raw content as fallback\n- This fixes empty extracts that caused Gemini to return empty classification\n- Tested full pipeline: crawl -&gt; extract -&gt; analyze -&gt; newspaper display\n- Articles now show proper company names and product titles\")"
     ],
     "deny": [],
     "ask": []
