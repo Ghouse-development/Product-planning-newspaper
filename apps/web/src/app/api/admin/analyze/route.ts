@@ -8,15 +8,20 @@ const logger = createLogger('api:analyze')
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300 // 5 minutes
 
-export async function GET() {
-  return POST()
+export async function GET(request: Request) {
+  return POST(request)
 }
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
-    logger.info('Starting analyze job')
+    // Parse query parameters for batch processing
+    const url = new URL(request.url)
+    const limit = parseInt(url.searchParams.get('limit') || '10', 10)
+    const skipAggregation = url.searchParams.get('skip_aggregation') === 'true'
 
-    const unanalyzed = await getUnanalyzedExtracts(30)
+    logger.info({ limit, skipAggregation }, 'Starting analyze job')
+
+    const unanalyzed = await getUnanalyzedExtracts(limit)
 
     let totalAnalyzed = 0
 
@@ -75,41 +80,44 @@ export async function POST() {
       }
     }
 
-    // 4. Generate trend analysis
-    const trendPrompt = getTrendPrompt('Recent trend data')
-    const trendResponse = await callGemini(trendPrompt)
+    // 4. Generate trend analysis (skip if batching)
+    if (!skipAggregation && unanalyzed.length > 0) {
+      const trendPrompt = getTrendPrompt('Recent trend data')
+      const trendResponse = await callGemini(trendPrompt)
 
-    await insertAIOutput({
-      extract_id: unanalyzed[0]?.id || '00000000-0000-0000-0000-000000000000',
-      role: 'trend',
-      model: 'gemini-2.5-flash',
-      output_md: null,
-      output_json: safeJsonParse(trendResponse.text, {}),
-      tokens_in: trendResponse.tokens_in,
-      tokens_out: trendResponse.tokens_out,
-      usd_cost: trendResponse.usd_cost,
-    })
+      await insertAIOutput({
+        extract_id: unanalyzed[0]?.id || '00000000-0000-0000-0000-000000000000',
+        role: 'trend',
+        model: 'gemini-2.5-flash',
+        output_md: null,
+        output_json: safeJsonParse(trendResponse.text, {}),
+        tokens_in: trendResponse.tokens_in,
+        tokens_out: trendResponse.tokens_out,
+        usd_cost: trendResponse.usd_cost,
+      })
 
-    // 5. Generate strategy
-    const strategyPrompt = getStrategyPrompt('Combined insights')
-    const strategyResponse = await callGemini(strategyPrompt)
+      // 5. Generate strategy
+      const strategyPrompt = getStrategyPrompt('Combined insights')
+      const strategyResponse = await callGemini(strategyPrompt)
 
-    await insertAIOutput({
-      extract_id: unanalyzed[0]?.id || '00000000-0000-0000-0000-000000000000',
-      role: 'strategy',
-      model: 'gemini-2.5-flash',
-      output_md: null,
-      output_json: safeJsonParse(strategyResponse.text, {}),
-      tokens_in: strategyResponse.tokens_in,
-      tokens_out: strategyResponse.tokens_out,
-      usd_cost: strategyResponse.usd_cost,
-    })
+      await insertAIOutput({
+        extract_id: unanalyzed[0]?.id || '00000000-0000-0000-0000-000000000000',
+        role: 'strategy',
+        model: 'gemini-2.5-flash',
+        output_md: null,
+        output_json: safeJsonParse(strategyResponse.text, {}),
+        tokens_in: strategyResponse.tokens_in,
+        tokens_out: strategyResponse.tokens_out,
+        usd_cost: strategyResponse.usd_cost,
+      })
+    }
 
     logger.info({ totalAnalyzed }, 'Analyze job completed')
 
     return NextResponse.json({
       success: true,
       totalAnalyzed,
+      remaining: unanalyzed.length === limit, // True if there might be more
     })
   } catch (error) {
     logger.error({ error }, 'Analyze job failed')
